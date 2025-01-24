@@ -1,0 +1,9 @@
+API Keys
+*.env
+Dependency directories
+node_modules/
+Log files
+*.log
+OS generated files
+.DS_Store
+Thumbs.db
