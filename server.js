@@ -1,18 +1,3 @@
-import express from "express";
-import fetch from "node-fetch";
-import cors from "cors";
-import dotenv from "dotenv";
-
-dotenv.config();
-
-const app = express();
-
-app.use(express.json());
-app.use(cors());
-
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-
-console.log(OPENAI_API_KEY);
 app.post("/api/chat", async (req, res) => {
   console.log(req.body);
   const { query } = req.body;
@@ -36,26 +21,21 @@ app.post("/api/chat", async (req, res) => {
         ],
       }),
     });
-  
+
     const data = await response.json();
-  
+
     if (!response.ok) {
       console.log("OpenAI API error:", data); // Log the error response from OpenAI
       return res.status(response.status).json(data);
     }
-  
-    res.json(data);
+
+    // Extract the assistant's reply
+    const reply = data.choices?.[0]?.message?.content || "No response found.";
+
+    // Send only the reply back to the client
+    res.json({ reply });
   } catch (error) {
     console.error("Error:", error); // Log the full error if it's not from the OpenAI API
-    res
-      .status(500)
-      .json({ error: "An error occurred while processing your request." });
+    res.status(500).json({ error: "An error occurred while processing your request." });
   }
-  
-});
-
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
 });
